@@ -1,0 +1,2 @@
+# No external dependencies required
+# Uses shared database module from ../../includes/database.py

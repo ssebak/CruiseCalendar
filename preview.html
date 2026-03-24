@@ -1,0 +1,164 @@
+Content-Type: text/html; charset=utf-8
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cruise Calendar - Port Calls</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚓ Cruise Calendar</h1>
+            <p>Port Calls Schedule</p>
+        </div>
+        <div class="controls">
+            <form method="GET">
+                <label for="year">Year:</label>
+                <select name="year" id="year" onchange="this.form.submit()">
+                    <option value="2024" >2024</option><option value="2025" >2025</option><option value="2026" selected>2026</option><option value="2027" >2027</option><option value="2028" >2028</option><option value="2029" >2029</option><option value="2030" >2030</option>
+                </select>
+
+                <label for="month">Month:</label>
+                <select name="month" id="month" onchange="this.form.submit()">
+                    <option value="1" >January</option><option value="2" selected>February</option><option value="3" >March</option><option value="4" >April</option><option value="5" >May</option><option value="6" >June</option><option value="7" >July</option><option value="8" >August</option><option value="9" >September</option><option value="10" >October</option><option value="11" >November</option><option value="12" >December</option>
+                </select>
+
+                <input type="hidden" name="week_offset" value="0">
+            </form>
+        </div>
+
+        <div class="week-display">
+            Jan 26 - Feb 01, 2026
+        </div>
+        <div class="controls">
+            <div class="nav-buttons">
+                <form method="GET" style="display:inline;">
+                    <input type="hidden" name="year" value="2026">
+                    <input type="hidden" name="month" value="2">
+                    <input type="hidden" name="week_offset" value="-1">
+                    <button type="submit">← Previous Week</button>
+                </form>
+                <form method="GET" style="display:inline;">
+                    <input type="hidden" name="year" value="2026">
+                    <input type="hidden" name="month" value="2">
+                    <input type="hidden" name="week_offset" value="1">
+                    <button type="submit">Next Week →</button>
+                </form>
+            </div>
+        </div>
+<div class="calendar">
+        <div class="day-column ">
+            <div class="day-header">
+                <div class="day-date">26</div>
+                <div class="day-weekday">Monday</div>
+                <div class="day-weekday">Jan</div>
+                <div class="day-stats">0 calls</div>
+
+            </div>
+            <div class="day-content">
+
+            </div>
+        </div>
+
+        <div class="day-column ">
+            <div class="day-header">
+                <div class="day-date">27</div>
+                <div class="day-weekday">Tuesday</div>
+                <div class="day-weekday">Jan</div>
+                <div class="day-stats">0 calls</div>
+
+            </div>
+            <div class="day-content">
+
+            </div>
+        </div>
+
+        <div class="day-column ">
+            <div class="day-header">
+                <div class="day-date">28</div>
+                <div class="day-weekday">Wednesday</div>
+                <div class="day-weekday">Jan</div>
+                <div class="day-stats">2 calls, 337 pax</div>
+
+            </div>
+            <div class="day-content">
+
+                <div class="portcall-card">
+                    <div class="vessel-name">Viking Vela</div>
+                    <div class="portcall-id">ID: 890412</div>
+                    <div class="pier-info">Pier: SS3</div>
+                    <div class="pier-info">Pax: 0</div>
+<div class="time-info arrival">↓ Arrival: 07:30</div>
+<div class="time-info departure">↑ Departure: 15:00</div>
+                </div>
+
+                <div class="portcall-card">
+                    <div class="vessel-name">Trollfjord</div>
+                    <div class="portcall-id">ID: 974045</div>
+                    <div class="pier-info">Pier: TOL1</div>
+                    <div class="pier-info">Pax: 337</div>
+<div class="time-info arrival">↓ Arrival: 10:00</div>
+<div class="time-info departure">↑ Departure: 16:00</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="day-column ">
+            <div class="day-header">
+                <div class="day-date">29</div>
+                <div class="day-weekday">Thursday</div>
+                <div class="day-weekday">Jan</div>
+                <div class="day-stats">0 calls</div>
+
+            </div>
+            <div class="day-content">
+
+            </div>
+        </div>
+
+        <div class="day-column ">
+            <div class="day-header">
+                <div class="day-date">30</div>
+                <div class="day-weekday">Friday</div>
+                <div class="day-weekday">Jan</div>
+                <div class="day-stats">0 calls</div>
+
+            </div>
+            <div class="day-content">
+
+            </div>
+        </div>
+
+        <div class="day-column ">
+            <div class="day-header">
+                <div class="day-date">31</div>
+                <div class="day-weekday">Saturday</div>
+                <div class="day-weekday">Jan</div>
+                <div class="day-stats">0 calls</div>
+
+            </div>
+            <div class="day-content">
+
+            </div>
+        </div>
+
+        <div class="day-column other-month">
+            <div class="day-header">
+                <div class="day-date">01</div>
+                <div class="day-weekday">Sunday</div>
+                <div class="day-weekday">Feb</div>
+                <div class="day-stats">0 calls</div>
+
+            </div>
+            <div class="day-content">
+
+            </div>
+        </div>
+</div>
+    </div>
+</body>
+</html>
