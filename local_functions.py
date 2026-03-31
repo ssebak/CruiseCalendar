@@ -87,6 +87,7 @@ def build_navigation_controls(year, month, week_offset, calendar_manager):
     next_month_y, next_month_m = year, month
     if next_week_dates and next_week_dates[0].month != month:
         next_month_m += 1
+        next_offset = 1
         if next_month_m > 12:
             next_month_m = 1
             next_month_y += 1
