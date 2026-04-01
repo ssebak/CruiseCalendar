@@ -8,6 +8,8 @@ the command‑line or a unit test.
 import cgi
 from datetime import datetime
 
+from calendar_manager import CalendarManager
+
 
 def get_query_params():
     """Extract year/month/week_offset from the query string.
@@ -83,23 +85,29 @@ def build_navigation_controls(year, month, week_offset, calendar_manager):
 
     week_dates = calendar_manager.get_week_for_month(week_offset)
     next_week_dates = calendar_manager.get_week_for_month(next_offset)
+    prev_week_dates = calendar_manager.get_week_for_month(prev_offset)
+
+    def get_month_offset(target_year, target_month, target_week_start):
+        temp_calendar = CalendarManager(target_year, target_month)
+        for candidate_offset in range(-6, 7):
+            candidate_week = temp_calendar.get_week_for_month(candidate_offset)
+            if candidate_week[0] == target_week_start:
+                return candidate_offset
+        return 0
 
     next_month_y, next_month_m = year, month
-    if next_week_dates and next_week_dates[0].month != month:
-        next_month_m += 1
-        next_offset = 1
-        if next_month_m > 12:
-            next_month_m = 1
-            next_month_y += 1
+    if next_week_dates:
+        next_month_y = next_week_dates[0].year
+        next_month_m = next_week_dates[0].month
+        if (next_month_y, next_month_m) != (year, month):
+            next_offset = get_month_offset(next_month_y, next_month_m, next_week_dates[0])
 
     prev_month_y, prev_month_m = year, month
-    if week_offset == 0 and week_dates[0].month == month:
-        prev_week_dates = calendar_manager.get_week_for_month(-1)
-        if prev_week_dates and prev_week_dates[0].month != month:
-            prev_month_m -= 1
-            if prev_month_m < 1:
-                prev_month_m = 12
-                prev_month_y -= 1
+    if prev_week_dates:
+        prev_month_y = prev_week_dates[0].year
+        prev_month_m = prev_week_dates[0].month
+        if (prev_month_y, prev_month_m) != (year, month):
+            prev_offset = get_month_offset(prev_month_y, prev_month_m, prev_week_dates[0])
 
     week_start = week_dates[0]
     week_end = week_dates[-1]
