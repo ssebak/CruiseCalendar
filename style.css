@@ -205,6 +205,22 @@ body {
     word-wrap: break-word;
 }
 
+.vessel-name.masked {
+    color: #999;
+    font-style: italic;
+}
+
+.vessel-name.masked.shadow {
+    color: transparent;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+    user-select: none; /* Prevents selecting/copying but will display in source*/
+}
+
+.vessel-name.masked.scrambled {
+    filter: blur(4px);
+    user-select: none; /* Prevents selecting/copying but will display in source*/
+}
+
 .portcall-id {
     font-size: 0.85em;
     color: #667eea;

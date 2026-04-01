@@ -27,6 +27,26 @@ def get_query_params():
     return year, month, week_offset
 
 
+def should_mask_vessel_name(date_obj, threshold_months=12, now=None):
+    """Return True when a portcall date is more than the configured threshold ahead."""
+    if now is None:
+        now = datetime.now()
+
+    if date_obj < now:
+        return False
+
+    year_diff = date_obj.year - now.year
+    month_diff = date_obj.month - now.month
+    month_distance = year_diff * 12 + month_diff
+
+    if month_distance > threshold_months:
+        return True
+    if month_distance < threshold_months:
+        return False
+
+    return date_obj.day > now.day
+
+
 # ---------------------------------------------------------------------------
 # HTML builders
 # ---------------------------------------------------------------------------
@@ -135,7 +155,12 @@ def build_navigation_controls(year, month, week_offset, calendar_manager):
     return html
 
 
-def build_calendar_grid(week_dates, portcalls_by_date):
+def build_calendar_grid(
+    week_dates,
+    portcalls_by_date,
+    future_vessel_name_threshold_months=12,
+    future_vessel_name_mask='na',
+):
     weekday_names = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
     html = '<div class="calendar">'
     for date_obj in week_dates:
@@ -164,7 +189,12 @@ def build_calendar_grid(week_dates, portcalls_by_date):
             <div class="day-content">"""
         if date_key in portcalls_by_date:
             for portcall in day_calls:
-                html += build_portcall_card(portcall)
+                html += build_portcall_card(
+                    portcall,
+                    portcall_date=date_obj,
+                    future_vessel_name_threshold_months=future_vessel_name_threshold_months,
+                    future_vessel_name_mask=future_vessel_name_mask,
+                )
         html += """
             </div>
         </div>"""
@@ -172,17 +202,33 @@ def build_calendar_grid(week_dates, portcalls_by_date):
     return html
 
 
-def build_portcall_card(portcall):
-    vessel_name = portcall.get('vessel_name','Unknown')
-    portcall_id = portcall.get('portcall_id','N/A')
-    pier = portcall.get('pier','TBD')
-    arrival = portcall.get('arrival_time','')
-    departure = portcall.get('departure_time','')
-    passengers = portcall.get('passengers','n/a')
+def build_portcall_card(
+    portcall,
+    portcall_date=None,
+    future_vessel_name_threshold_months=12,
+    future_vessel_name_mask='na',
+):
+    vessel_name = portcall.get('vessel_name', 'Unknown')
+    portcall_id = portcall.get('portcall_id', 'N/A')
+    pier = portcall.get('pier', 'TBD')
+    arrival = portcall.get('arrival_time', '')
+    departure = portcall.get('departure_time', '')
+    passengers = portcall.get('passengers', 'n/a')
+
+    masked = (
+        portcall_date is not None and
+        should_mask_vessel_name(portcall_date, future_vessel_name_threshold_months)
+    )
+    vessel_name_class = 'vessel-name'
+    if masked:
+        if future_vessel_name_mask == 'na':
+            vessel_name = 'n/a'
+        else:
+            vessel_name_class = f'vessel-name masked {future_vessel_name_mask}'
 
     html = f"""
                 <div class="portcall-card">
-                    <div class="vessel-name">{vessel_name}</div>
+                    <div class="{vessel_name_class}">{vessel_name}</div>
                     <div class="portcall-id">ID: {portcall_id}</div>
                     <div class="pier-info">Pier: {pier}</div>
 """

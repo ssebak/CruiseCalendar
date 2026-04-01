@@ -74,7 +74,12 @@ def main():
 
     html = build_page_header(year, month)
     html += build_navigation_controls(year, month, week_offset, cal)
-    html += build_calendar_grid(week_dates, portcalls_by_date)
+    html += build_calendar_grid(
+        week_dates,
+        portcalls_by_date,
+        future_vessel_name_threshold_months=12,
+        future_vessel_name_mask='na',
+    )
     html += build_page_footer()
 
     sys.stdout.write(html)
