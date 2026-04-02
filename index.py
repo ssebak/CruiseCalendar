@@ -78,7 +78,7 @@ def main():
         week_dates,
         portcalls_by_date,
         future_vessel_name_threshold_months=12,
-        future_vessel_name_mask='na',
+        future_vessel_name_mask='TBA',
     )
     html += build_page_footer()
 

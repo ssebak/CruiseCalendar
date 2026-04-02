@@ -159,7 +159,7 @@ def build_calendar_grid(
     week_dates,
     portcalls_by_date,
     future_vessel_name_threshold_months=12,
-    future_vessel_name_mask='na',
+    future_vessel_name_mask='TBA',
 ):
     weekday_names = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
     html = '<div class="calendar">'
@@ -206,10 +206,10 @@ def build_portcall_card(
     portcall,
     portcall_date=None,
     future_vessel_name_threshold_months=12,
-    future_vessel_name_mask='na',
+    future_vessel_name_mask='TBA',
 ):
     vessel_name = portcall.get('vessel_name', 'Unknown')
-    portcall_id = portcall.get('portcall_id', 'N/A')
+    portcall_id = portcall.get('portcall_id', 'n/a')
     pier = portcall.get('pier', 'TBD')
     arrival = portcall.get('arrival_time', '')
     departure = portcall.get('departure_time', '')
@@ -221,8 +221,8 @@ def build_portcall_card(
     )
     vessel_name_class = 'vessel-name'
     if masked:
-        if future_vessel_name_mask == 'na':
-            vessel_name = 'n/a'
+        if future_vessel_name_mask == 'TBA':
+            vessel_name = 'TBA'
         else:
             vessel_name_class = f'vessel-name masked {future_vessel_name_mask}'
 
