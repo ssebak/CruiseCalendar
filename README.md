@@ -1,6 +1,6 @@
 # Cruise Calendar - Port Calls Scheduler
 
-A Python/CGI-based web calendar application displaying cruise ship port calls in a weekly view with year/month selection.
+A Python/CGI-based web calendar application displaying cruise ship port calls in a weekly view with year/month selection. Would work more or less out of the box for companies using the Grieg Connect "PORT" application.
 
 ## Features
 
