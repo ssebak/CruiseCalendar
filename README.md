@@ -14,14 +14,14 @@ A Python/CGI-based web calendar application displaying cruise ship port calls in
   - Arrival and departure times
 - **Smart Date Display**: Shows previous/next month dates to fill out weeks (always starts on Monday)
 - **Responsive Design**: Clean, modern UI with proper styling
+- **Data Sources**: Supports both API endpoints and direct database connections
 
 ## Prerequisites
 
 - Python 3.7+
 - Apache web server with CGI enabled
-- Do whatever you need to get your API authentication, endpoints etc sorted out
-- pyodbc library (for SQL Server connection) *support for this will be added later
-- Microsoft SQL Server database *support for this will be added later
+- For database access: pyodbc library and Microsoft SQL Server database
+- For API access: Valid API credentials and endpoint URLs
 
 ## Installation
 
@@ -31,15 +31,52 @@ A Python/CGI-based web calendar application displaying cruise ship port calls in
 pip install pyodbc
 ```
 
-You may also need to install ODBC Driver for SQL Server: *support for this will be added later
+You may also need to install ODBC Driver for SQL Server:
 - **Windows**: Download from [Microsoft](https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server)
 - **Linux**: `sudo apt-get install odbc-postgresql` (or equivalent for your SQL version)
 
-### 2. Configure API request
+### 2. Configure Data Source
 
-Edit `index.py` and add whatever is necessary to authenticate and get access to the API.
-Edit `portcall_fetcher.py` and adjust to support the structure of the parameters for your API. You also need to handle the data 
-pulled from the API so that they match the related code.
+The application supports two data sources: **API** (default) and **Database**. Choose the appropriate configuration below.
+
+#### Option A: API Configuration (Default)
+
+If using an API endpoint, configure the following in `index.py`:
+
+```python
+# Update these imports and variables with your API details
+from your_api_module import API_BASE_URL, API_PORTCALLS_CRUISES
+# Ensure your API token retrieval is properly configured
+```
+
+The API should return JSON data with portcall information. The application expects fields like:
+- `vessel_name` or `vessel.name`
+- `portcall_id` or `portCallId`
+- `pier` or quay information
+- `arrival_time` and `departure_time`
+- `arrival_date`
+
+#### Option B: Database Configuration
+
+Edit `portcall_fetcher.py` and update the `DB_CONFIG` dictionary:
+
+```python
+DB_CONFIG = {
+    'driver': '{ODBC Driver 17 for SQL Server}',  # Check your version
+    'server': 'your-actual-server-name',
+    'database': 'your-actual-database',
+    'uid': 'your-username',
+    'pwd': 'your-password',
+}
+```
+
+To use database mode, modify the call in `index.py` to set `source='db'`.
+
+### 3. Configure Data Retrieval
+
+#### For Database Mode:
+
+In `portcall_fetcher.py`, locate the `get_portcalls_for_week()` function and replace the placeholder SQL query with your actual query.
 
 **Required columns:**
 - `vessel_name` - Name of the vessel
@@ -47,13 +84,29 @@ pulled from the API so that they match the related code.
 - `pier` - Pier/berth information
 - `arrival_time` - Arrival time (TIME or DATETIME type)
 - `departure_time` - Departure time (TIME or DATETIME type)
+- `arrival_date` - Date column for filtering
 - `passengers` *(optional)* - Number of passengers for the port call; if
   present it will be shown on the card as “Pax: …”
 
-  Columns can be adjusted to your needs of course.
+**Example query:**
+```sql
+SELECT 
+    vessel_name,
+    portcall_id,
+    pier,
+    CAST(arrival_time AS TIME) as arrival_time,
+    CAST(departure_time AS TIME) as departure_time,
+    CAST(arrival_time AS DATE) as arrival_date
+FROM your_portcalls_table
+WHERE CAST(arrival_time AS DATE) BETWEEN ? AND ?
+ORDER BY arrival_date, arrival_time
+```
 
+#### For API Mode:
 
-### 3. Deploy to Apache
+Ensure your API endpoint returns JSON data in the expected format. The application will automatically map common field names. If your API uses different field names, you may need to modify the parsing logic in `get_portcalls_for_week_api()`.
+
+### 4. Deploy to Apache
 
 #### On Windows with Apache:
 
@@ -113,7 +166,7 @@ CruiseCalendar/
 ├── calendar.cgi              # Compatibility shim that forwards to index.py
 ├── local_functions.py        # Shared HTML helper routines
 ├── calendar_manager.py       # Date/calendar logic
-├── portcall_fetcher.py       # Database connection and queries
+├── portcall_fetcher.py       # Database and API data fetching logic
 ├── style.css                 # External stylesheet
 └── README.md                 # This file
 ```
@@ -138,10 +191,11 @@ Manages calendar operations:
 - Date formatting utilities
 
 ### portcall_fetcher.py
-Handles database operations:
-- Database connection management
-- SQL query execution *support for this will be added later
+Handles data retrieval from multiple sources:
+- Database connection management and SQL queries
+- API endpoint calls with authentication
 - Data formatting and grouping by date
+- Timezone conversion and normalization
 
 ## Customization
 
@@ -179,6 +233,16 @@ Adjust card layout in `calendar.cgi` function `build_portcall_card()` to show/hi
 - Check Apache error log for specific error
 - Verify shebang line is correct: `#!/usr/bin/env python3`
 
+## Database Query Tips
+
+If your portcall table has different column names, map them in the query:
+```sql
+SELECT 
+    ship_name as vessel_name,
+    id as portcall_id,
+    berth_code as pier,
+    ...
+```
 
 If you have portcalls spanning multiple days, consider:
 - Showing only the arrival date
@@ -196,10 +260,11 @@ For large databases:
 For issues or questions:
 1. Check the troubleshooting section
 2. Review Apache error logs
-3. Test your API call using curl, postman or equivalent
+3. Test your SQL query directly in SQL Server Management Studio
+4. Verify pyodbc connection with a standalone test script
 
 ---
 
 **Version**: 1.0  
 **Last Updated**: February 2026  
-**Compatible with**: Python 3.7+, Apache 2.4+
+**Compatible with**: Python 3.7+, Apache 2.4+, SQL Server 2012+

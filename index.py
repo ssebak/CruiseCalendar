@@ -37,9 +37,9 @@ from local_functions import (
 
 # get the API token functions
 sys.path.append('../../includes')
-import api_secrets
-import api_utils
-from api_endpoints import API_BASE_URL, API_PORTCALLS_CRUISES
+import krakentools_secrets
+import krakentools_utils
+from krakentools_endpoints import API_BASE_URL, API_PORTCALLS_CRUISES
 
 def main():
     # ensure the output stream uses utf-8 on Windows so emojis and
@@ -59,7 +59,7 @@ def main():
     week_dates = cal.get_week_for_month(week_offset)
 
     #Get token to access the API
-    valid_token = api_utils.get_valid_bearer_token(api_secrets.CLIENT_ID, api_secrets.CLIENT_SECRET, api_secrets.AUDIENCE, api_secrets.TOKEN_URL, api_secrets.GRANT_TYPE)
+    valid_token = krakentools_utils.get_valid_bearer_token(krakentools_secrets.CLIENT_ID, krakentools_secrets.CLIENT_SECRET, krakentools_secrets.AUDIENCE, krakentools_secrets.TOKEN_URL, krakentools_secrets.GRANT_TYPE)
 
     # Fetch REAL portcall data from your API/database
     portcalls_by_date = get_portcalls_for_week(
@@ -67,6 +67,7 @@ def main():
         week_dates[-1],
         year,
         month,
+        source='api',
         api_base_url=API_BASE_URL,
         api_resource=API_PORTCALLS_CRUISES,
         api_token=valid_token
@@ -78,7 +79,7 @@ def main():
         week_dates,
         portcalls_by_date,
         future_vessel_name_threshold_months=12,
-        future_vessel_name_mask='TBA',
+        future_vessel_name_mask='TBA'
     )
     html += build_page_footer()
 

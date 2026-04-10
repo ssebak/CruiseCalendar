@@ -10,7 +10,6 @@ from datetime import datetime
 
 from calendar_manager import CalendarManager
 
-
 def get_query_params():
     """Extract year/month/week_offset from the query string.
 
@@ -25,7 +24,6 @@ def get_query_params():
     month = int(form.getvalue('month', today.month))
     week_offset = int(form.getvalue('week_offset', 0))
     return year, month, week_offset
-
 
 def should_mask_vessel_name(date_obj, threshold_months=12, now=None):
     """Return True when a portcall date is more than the configured threshold ahead."""
@@ -209,7 +207,7 @@ def build_portcall_card(
     future_vessel_name_mask='TBA',
 ):
     vessel_name = portcall.get('vessel_name', 'Unknown')
-    portcall_id = portcall.get('portcall_id', 'n/a')
+    portcall_id = portcall.get('portcall_id', 'N/A')
     pier = portcall.get('pier', 'TBD')
     arrival = portcall.get('arrival_time', '')
     departure = portcall.get('departure_time', '')

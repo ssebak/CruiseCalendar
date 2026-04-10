@@ -15,12 +15,12 @@ from portcall_fetcher import get_portcalls_for_week
 
 # get the API token functions
 sys.path.append('../../includes')
-import api_secrets
-import api_utils
-from api_endpoints import API_BASE_URL, API_PORTCALLS_CRUISES
+import krakentools_secrets
+import krakentools_utils
+from krakentools_endpoints import API_BASE_URL, API_PORTCALLS_CRUISES
 
 #get token
-valid_token = api_utils.get_valid_bearer_token(api_secrets.CLIENT_ID, api_secrets.CLIENT_SECRET, api_secrets.AUDIENCE, api_secrets.TOKEN_URL, api_secrets.GRANT_TYPE)
+valid_token = krakentools_utils.get_valid_bearer_token(krakentools_secrets.CLIENT_ID, krakentools_secrets.CLIENT_SECRET, krakentools_secrets.AUDIENCE, krakentools_secrets.TOKEN_URL, krakentools_secrets.GRANT_TYPE)
 
 # reuse the same HTML helpers that the CGI/index script will use
 to_import = ('build_page_header', 'build_navigation_controls', 'build_calendar_grid', 'build_page_footer')
@@ -39,6 +39,7 @@ def generate_test_html(year, month, week_offset):
         week_dates[-1],
         year,
         month,
+        source='api',
         api_base_url=API_BASE_URL,
         api_resource=API_PORTCALLS_CRUISES,
         api_token=valid_token

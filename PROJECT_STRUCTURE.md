@@ -46,12 +46,11 @@ python test_calendar.py     # Generates preview HTML
 ```
 Then open `calendar_test.html` in your browser to see the layout.
 
-### 2️⃣ Configure Your Database
+### 2️⃣ Configure Your Data Source
 Edit `portcall_fetcher.py`:
-- Update `DB_CONFIG` with your SQL Server details
-- Replace placeholder SQL query with your actual query
-- See `SAMPLE_QUERIES.py` for examples matching your schema
-* current version does not include logic for pulling data from a database, only through an API. I'm planning on covering getting the data from a database as well though
+- For **Database**: Update `DB_CONFIG` with your SQL Server details and replace placeholder SQL query
+- For **API**: Ensure API endpoints and authentication are configured in `index.py`
+- See `SAMPLE_QUERIES.py` for SQL examples if using database
 
 ### 3️⃣ Deploy to Apache
 ```bash
@@ -88,7 +87,7 @@ The week always starts on **Monday** and shows 7 days.
 
 Each day header now includes a summary line showing the number of
 portcalls and, if available, the total passengers (Pax) for that day. These
-values are calculated from the data returned by your API call and appear
+values are calculated from the data returned by your SQL query and appear
 right below the weekday name.
 
 **Example**: February 2026
@@ -103,7 +102,7 @@ right below the weekday name.
 
 - **Select Month/Year** in dropdowns → Calendar updates automatically
 - **Previous/Next buttons** → Navigate between weeks
-- Month/year parameters passed to API call for filtered results
+- Month/year parameters passed to SQL query for filtered results
 
 ### Date Grouping
 
@@ -123,7 +122,7 @@ Your Apache Server
     http://localhost/cgi-bin/calendar.cgi?year=2026&month=2&week_offset=0
 ```
 
-## Database Variables
+## Data Source Variables
 
 The `get_portcalls_for_week()` function receives:
 - `start_date`: First day of week (Monday) as datetime.date
@@ -131,7 +130,7 @@ The `get_portcalls_for_week()` function receives:
 - `year`: Selected year from user dropdown
 - `month`: Selected month from user dropdown
 
-Use these to filter your API call appropriately.
+Use these to filter your SQL query or API request appropriately.
 
 ## Styling & Layout
 
@@ -146,23 +145,33 @@ The calendar includes:
 
 Modify CSS in `calendar.cgi` function `build_page_header()` to customize.
 
-## Database Connection
+## Data Source Connection
 
-Currently this does not support pulling data from a database, only through an API
+Supports multiple data sources:
+- **API Endpoints**: RESTful API calls with Bearer token authentication
+- **Microsoft SQL Server**: Via pyodbc with connection pooling ready
+- **Flexible Parsing**: Automatic field mapping for common data formats
 
+For database setup:
+```python
+import pyodbc
+print(pyodbc.drivers())  # Verify driver installed
+```
+
+For API setup, ensure your endpoint returns JSON with the expected portcall structure.
 
 ## Performance Considerations
 
-- **Query Time**: Typically < 100ms for most databases (adjust with indexes)
+- **Query/API Time**: Typically < 100ms for most data sources (optimize with indexes/caching)
 - **Page Size**: ~50KB HTML (compressed ~15KB)
 - **Browser Support**: All modern browsers (Chrome, Firefox, Safari, Edge)
-- **Database Load**: One query per page load (can add caching)
+- **Data Load**: One request per page load (can add caching)
 
 ## Next Steps
 
 1. ✅ Review [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)
-2. ✅ Update `portcall_fetcher.py` with your database details
-3. ✅ Reference `SAMPLE_QUERIES.py` for SQL examples
+2. ✅ Update `portcall_fetcher.py` with your data source details (database or API)
+3. ✅ Reference `SAMPLE_QUERIES.py` for SQL examples if using database
 4. ✅ Deploy to your Apache cgi-bin directory
 5. ✅ Test at `http://your-server/cgi-bin/calendar.cgi`
 
@@ -171,6 +180,7 @@ Currently this does not support pulling data from a database, only through an AP
 | Issue | Reference |
 |-------|-----------|
 | "How do I deploy?" | See `DEPLOYMENT_CHECKLIST.md` |
+| "What SQL query do I use?" | See `SAMPLE_QUERIES.py` |
 | "How do I customize the styling?" | Edit CSS in `calendar.cgi` |
 | "Calendar not showing data" | See README.md troubleshooting section |
 | "How are weeks calculated?" | See `calendar_manager.py` `get_week_for_month()` |
@@ -180,5 +190,6 @@ Currently this does not support pulling data from a database, only through an AP
 **Project Version**: 1.0  
 **Python Version**: 3.7+  
 **Apache Version**: 2.4+ (with CGI enabled)  
+**Data Sources**: API Endpoints or Microsoft SQL Server 2012+  
 **Created**: February 2026  
 **Status**: ✅ Ready for Deployment
