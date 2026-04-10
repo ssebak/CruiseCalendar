@@ -89,7 +89,6 @@ def get_portcalls_for_week(start_date, end_date, year, month):
         #     vessel_name,
         #     portcall_id,
         #     pier,
-        #     passengers,
         #     CAST(arrival_time AS TIME) as arrival_time,
         #     CAST(departure_time AS TIME) as departure_time,
         #     CAST(arrival_time AS DATE) as arrival_date
@@ -98,17 +97,21 @@ def get_portcalls_for_week(start_date, end_date, year, month):
         # ORDER BY arrival_date, arrival_time
         
         query = f"""
-            SELECT 
-                vessel_name,
-                portcall_id,
-                pier,
-                passengers,
-                CAST(arrival_time AS TIME) as arrival_time,
-                CAST(departure_time AS TIME) as departure_time,
-                CAST(arrival_time AS DATE) as arrival_date
-            FROM your_portcalls_table
-            WHERE arrival_date BETWEEN @start_date AND @end_date
-            ORDER BY arrival_date, arrival_time
+            select 
+                f.fartøynavn as vessel_name,
+		        ha.anløpid as portcall_id,
+		        ha.ressursid as pier,
+                ISNULL(ha.antallpassasjerer,0) as passengers,
+		        cast(ha.ankomst as time(0)) as arrival_time,
+		        cast(ha.avgang as time(0)) as departure_time,
+		        cast(ha.ankomst as date) as arrival_date
+            from powerbi.fakthavneanløp ha,
+	        powerbi.dimfartøy f
+            where ha.TrafikkTypeKode=37
+            and ha.anløpstatus not in ('0','Y','Z')
+            and ha.fartøyid=f.fartøyid
+            and cast(ha.ankomst as date) between '{start_date}' and '{end_date}'
+            order by arrival_date, arrival_time
         """
         
         # Execute query using your database function
@@ -297,19 +300,22 @@ def _get_portcalls_for_week_from_db(start_date, end_date, year, month):
     portcalls_by_date = {}
 
     try:
-        #Build your SQL query here to fetch portcalls for the given date range
         query = f"""
-            SELECT 
-                vessel_name,
-                portcall_id,
-                pier,
-                passengers,
-                CAST(arrival_time AS TIME) as arrival_time,
-                CAST(departure_time AS TIME) as departure_time,
-                CAST(arrival_time AS DATE) as arrival_date
-            FROM your_portcalls_table
-            WHERE arrival_date BETWEEN @start_date AND @end_date
-            ORDER BY arrival_date, arrival_time
+            select 
+                f.fartøynavn as vessel_name,
+	        ha.anløpid as portcall_id,
+	        ha.ressursid as pier,
+                ISNULL(ha.antallpassasjerer,0) as passengers,
+	        cast(ha.ankomst as time(0)) as arrival_time,
+	        cast(ha.avgang as time(0)) as departure_time,
+	        cast(ha.ankomst as date) as arrival_date
+            from powerbi.fakthavneanløp ha,
+	    powerbi.dimfartøy f
+            where ha.TrafikkTypeKode=37
+            and ha.anløpstatus not in ('0','Y','Z')
+            and ha.fartøyid=f.fartøyid
+            and cast(ha.ankomst as date) between '{start_date}' and '{end_date}'
+            order by arrival_date, arrival_time
         """
 
         rows = db_getdata(query)
